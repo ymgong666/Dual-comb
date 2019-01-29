@@ -7,13 +7,14 @@ plots = 1*[1 1 1 1]; % 1 = create diagnostic plot, 0 = don't
 t_delay = 0*10^-9; % Delay the correction signal by this amount in s
 S = 4000*10^6; % sample rate in S/s
 r = 20; % decimation factor
-L = 10^7;
+L = 10^7; 
 %% Load raw data
 [filename, path] = uigetfile({'*.txt;*.bin' 'Text file or binary document';...
     '*.txt' 'Text file'; '*.bin' 'Binary document'},'Select BOTH raw data files',...
     'R:\DiodeDualComb\Data','MultiSelect','on');
 
 % search for B file: if find B file then get name else use A name.
+% Question: In what situation we use A file for two files? When we put dual-comb signal and beat note signal into same channel?
 if size(filename,2) == 2
     filenameA = fullfile(path,filename{1});
     filenameB = fullfile(path,filename{2});
@@ -29,7 +30,7 @@ if strcmp('.bin',filenameA(end-3:end)) == 1
     [ch2,~] = fread(fidB,[L,1],'uint16');
     fclose(fidA);
     fclose(fidB);
-    ch1 = 2.5*ch1/2^12-1.25;
+    ch1 = 2.5*ch1/2^12-1.25;  % what does this equation do? Is it relevant to the convertion between different data classes?
     ch2 = 2.5*ch2/2^12-1.25;
 else
     ch1 = readtable(filenameA);
@@ -80,6 +81,7 @@ Chs(5) = find(ismember(ax, gca));
 answer4 = questdlg('That beat note was with which CW?','Identify','1','2','Cancel','Cancel');
 close
 fs = 2*10^6*fs/S; % normalized freqs for iir
+% Question: why do we use 2*10^6 as prefacotr for normalizing freqs?
 
 % Analytic BP filter
 data_A = zeros(L,5);
@@ -119,6 +121,8 @@ while mod(length(data_A(:,1)),r) ~= 0
     ch1 = ch1(1:end-1);
     ch2 = ch2(1:end-1);
 end
+% Conceptual Question: what is the function of decimation in this code?
+
 
 % update axes
 L = length(data_A(:,1));
@@ -363,6 +367,7 @@ fs = 2*10^6*fs/S;
 if plots(3) == 1
     clock_CW_old = clock_CW;
 end
+% Question: what's the function of 367-369?
 
 % isolate clock
 [b, a] = butter(8,max(fs),'low');
