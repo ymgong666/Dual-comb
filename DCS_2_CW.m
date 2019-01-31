@@ -350,7 +350,7 @@ end
 % plot and select CW clock window
 figure('units','normalized','outerposition',[0 0.05 1 0.95])
 set(gcf,'color','w','DefaultAxesFontSize',24)
-plot((f-S/2)*10^-6,abs(fftshift(fft(clock_CW))))
+plot((f-S/2)*10^-6,abs(fftshift(fft(clock_CW))))       %Question: Why is f-S/2
 axis tight
 set(gca,'Ytick',[],'YColor','none')
 % xlim([0 500]) % show first 10 harmonics
@@ -394,7 +394,7 @@ if plots(3) == 1
 end
 %% Unwrap clock
 temp = fft(clock_CW);
-temp = [temp(1:L/2); zeros(3*L,1); temp((L/2+1):end)];
+temp = [temp(1:L/2); zeros(3*L,1); temp((L/2+1):end)];  % Question: what's the motivation of adding zero(3*L,1)
 clock2_up = ifft(temp);
 %% Determine ideal Delta_f
 phase = unwrap(angle(clock2_up));
@@ -406,8 +406,8 @@ L_burst = ceil(S/Delta_f);
 Delta_f = S/L_burst;
 %% Resample
 N_bursts = floor(L/L_burst); % always drop the last one
-if mod(N_bursts,2) ~= 0 % make sure it's even
-    N_bursts = N_bursts - 1;
+if mod(N_bursts,2) ~= 0 % make sure it's even    Question: why do we need to make sure the number of bursts is even?
+N_bursts = N_bursts - 1;
 end
 L = N_bursts*L_burst; % truncate record length IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -425,7 +425,7 @@ if plots(3) == 1
     % regenerate ddfg
     ddfg = dcs_A.*conj(dcs_A);
     ddfg = ddfg - mean(ddfg);
-    DDFG = fft(ddfg);
+    DDFG = fft(ddfg);           % Question: Why do we need to regenerate DDFG here?
     clock_CW_new = interp1((1:length(clock_CW)).',clock_CW,inds,'pchip');
 end
 %% Plot resample verification
